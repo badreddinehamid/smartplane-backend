@@ -30,8 +30,10 @@ public class ProvidersService {
         String plural = "providers";
 
         try {
-            return customObjectsApi.listClusterCustomObject(
+            Object providers = customObjectsApi.listClusterCustomObject(
                     group, version, plural, null, null, null, null, null, null, null, null, null, null);
+            System.out.println(providers);
+            return providers;
         } catch (ApiException e) {
             System.err.println("Error fetching providers: " + e.getResponseBody());
             e.printStackTrace();

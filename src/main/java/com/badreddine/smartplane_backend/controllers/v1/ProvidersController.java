@@ -1,4 +1,4 @@
-package com.badreddine.smartplane_backend.controllers;
+package com.badreddine.smartplane_backend.controllers.v1;
 
 import com.badreddine.smartplane_backend.services.ProvidersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/providers")
+@RequestMapping("api/v1/providers")
 public class ProvidersController {
 
     @Autowired

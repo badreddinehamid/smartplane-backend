@@ -1,4 +1,4 @@
-package com.badreddine.smartplane_backend.controllers;
+package com.badreddine.smartplane_backend.controllers.v1;
 
 import com.badreddine.smartplane_backend.services.XRDsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/xrds")
+@RequestMapping("api/v1/xrds")
 public class XRDsController {
 
 

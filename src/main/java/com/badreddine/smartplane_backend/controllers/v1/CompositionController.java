@@ -1,6 +1,7 @@
-package com.badreddine.smartplane_backend.controllers;
+package com.badreddine.smartplane_backend.controllers.v1;
 
-import com.badreddine.smartplane_backend.services.ClaimService;
+
+import com.badreddine.smartplane_backend.services.CompositionsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,26 +9,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/claim")
-public class ClaimController {
+@RequestMapping("api/v1/compositions")
+public class CompositionController  {
 
     @Autowired
-    private ClaimService claimService;
+    private CompositionsService compositionsService;
 
 
     @GetMapping("/")
-    public Object getClaim(@RequestParam(value = "namespace", defaultValue = "crossplane-system")String namespace) throws Exception {
+    public Object getCompositions(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace){
 
-        try{
-            return claimService.listclaims();
+        try {
+            return compositionsService.listCompositions();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
 
-
         return null;
-
     }
-
 }
