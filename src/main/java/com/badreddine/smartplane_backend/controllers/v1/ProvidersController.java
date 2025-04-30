@@ -1,5 +1,6 @@
 package com.badreddine.smartplane_backend.controllers.v1;
 
+import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.badreddine.smartplane_backend.services.ProvidersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,7 +19,7 @@ public class ProvidersController {
     private ProvidersService providersService;
 
     @GetMapping("/")
-    public Object getProviders(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace) {
+    public ProviderModel.ProviderList getProviders(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace) {
         try {
             return providersService.listProviders();
 

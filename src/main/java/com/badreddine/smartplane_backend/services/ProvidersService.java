@@ -1,4 +1,6 @@
 package com.badreddine.smartplane_backend.services;
+import com.badreddine.smartplane_backend.models.ProviderModel;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
@@ -24,15 +26,19 @@ public class ProvidersService {
         this.apiExtensions = apiExtensions;
     }
 
-    public Object listProviders() throws Exception {
+    public ProviderModel.ProviderList listProviders() throws Exception {
         String group = "pkg.crossplane.io";
         String version = "v1";
         String plural = "providers";
 
         try {
-            Object providers = customObjectsApi.listClusterCustomObject(
+            Object rawResponse = customObjectsApi.listClusterCustomObject(
                     group, version, plural, null, null, null, null, null, null, null, null, null, null);
-            System.out.println(providers);
+
+            // Convert the raw Object to your ProviderModel.ProviderList
+            ObjectMapper mapper = new ObjectMapper();
+            ProviderModel.ProviderList providers = mapper.convertValue(rawResponse, ProviderModel.ProviderList.class);
+
             return providers;
         } catch (ApiException e) {
             System.err.println("Error fetching providers: " + e.getResponseBody());
