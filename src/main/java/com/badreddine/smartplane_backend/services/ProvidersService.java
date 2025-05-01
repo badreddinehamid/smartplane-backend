@@ -1,6 +1,8 @@
 package com.badreddine.smartplane_backend.services;
+import com.badreddine.smartplane_backend.dto.ProviderConfigDto;
 import com.badreddine.smartplane_backend.dto.ProviderDto;
 import com.badreddine.smartplane_backend.mappers.ProviderMapper;
+import com.badreddine.smartplane_backend.models.ProviderConfigModel;
 import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.badreddine.smartplane_backend.utils.KubernetesObjectFetcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,45 +57,9 @@ public class ProvidersService {
         String version = "v1beta1";
         String plural = "providerconfigs";
 
-        try {
-            Map<String, Object> providerConfigs = (Map<String, Object>) customObjectsApi.listClusterCustomObject(
-                    group, version, plural, null, null, null, null, null, null, null, null, null, null);
+        Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
+        return rawResponse;
 
-            List<Map<String, Object>> items = (List<Map<String, Object>>) providerConfigs.get("items");
-            Map<String, Object> providerConfigsWithSecretInfo = new HashMap<>();
-
-            for (Map<String, Object> item : items) {
-                Map<String, Object> metadata = (Map<String, Object>) item.get("metadata");
-                Map<String, Object> spec = (Map<String, Object>) item.get("spec");
-
-                if (spec.containsKey("credentials")) {
-                    Map<String, Object> credentials = (Map<String, Object>) spec.get("credentials");
-
-                    if ("Secret".equals(credentials.get("source"))) {
-                        Map<String, Object> secretRef = (Map<String, Object>) credentials.get("secretRef");
-
-                        if (secretRef != null) {
-                            String secretName = (String) secretRef.get("name");
-                            String secretNamespace = (String) secretRef.get("namespace");
-                            String secretKey = (String) secretRef.get("key");
-
-                            Map<String, Object> secretInfo = getSecretInfo(secretNamespace, secretName, secretKey);
-
-                            String metadataName = metadata.get("name") != null ? metadata.get("name").toString() : "unknown";
-
-                            Map<String, Object> enrichedProviderConfig = new HashMap<>(item);
-                            enrichedProviderConfig.put("secretInfo", secretInfo);
-                            providerConfigsWithSecretInfo.put(metadataName, enrichedProviderConfig);
-                        }
-                    }
-                }
-            }
-
-            return providerConfigsWithSecretInfo;
-        } catch (ApiException e) {
-            System.err.println("Error fetching providerconfigs: " + e.getResponseBody());
-            throw new Exception("Failed to fetch providerconfigs from Kubernetes API", e);
-        }
     }
 
 
