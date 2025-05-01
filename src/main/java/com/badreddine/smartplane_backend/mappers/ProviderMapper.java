@@ -6,9 +6,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ProviderMapper {
     ProviderMapper INSTANCE = Mappers.getMapper(ProviderMapper.class);
-    ProviderDto ProviderModelToProviderDto(ProviderModel providerModel);
+    ProviderDto ProviderListToProviderDto(ProviderModel.ProviderList providerModel);
 
 }

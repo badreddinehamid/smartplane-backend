@@ -1,5 +1,6 @@
 package com.badreddine.smartplane_backend.controllers.v1;
 
+import com.badreddine.smartplane_backend.dto.ProviderDto;
 import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.badreddine.smartplane_backend.services.ProvidersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class ProvidersController {
     private ProvidersService providersService;
 
     @GetMapping("/")
-    public ProviderModel.ProviderList getProviders(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace) {
+    public ProviderDto getProviders(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace) {
         try {
             return providersService.listProviders();
 

@@ -1,4 +1,6 @@
 package com.badreddine.smartplane_backend.services;
+import com.badreddine.smartplane_backend.dto.ProviderDto;
+import com.badreddine.smartplane_backend.mappers.ProviderMapper;
 import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.ApiException;
@@ -20,13 +22,16 @@ public class ProvidersService {
     private final CoreV1Api api;
     private final ApiextensionsV1Api apiExtensions;
 
-    public ProvidersService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions) {
+    private final ProviderMapper providerMapper;
+
+    public ProvidersService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, ProviderMapper providerMapper) {
         this.customObjectsApi = customObjectsApi;
         this.api = api;
         this.apiExtensions = apiExtensions;
+        this.providerMapper = providerMapper;
     }
 
-    public ProviderModel.ProviderList listProviders() throws Exception {
+    public ProviderDto listProviders() throws Exception {
         String group = "pkg.crossplane.io";
         String version = "v1";
         String plural = "providers";
@@ -39,7 +44,8 @@ public class ProvidersService {
             ObjectMapper mapper = new ObjectMapper();
             ProviderModel.ProviderList providers = mapper.convertValue(rawResponse, ProviderModel.ProviderList.class);
 
-            return providers;
+
+            return providerMapper.ProviderListToProviderDto(providers);
         } catch (ApiException e) {
             System.err.println("Error fetching providers: " + e.getResponseBody());
             e.printStackTrace();
