@@ -2,6 +2,7 @@ package com.badreddine.smartplane_backend.services;
 import com.badreddine.smartplane_backend.dto.ProviderDto;
 import com.badreddine.smartplane_backend.mappers.ProviderMapper;
 import com.badreddine.smartplane_backend.models.ProviderModel;
+import com.badreddine.smartplane_backend.utils.KubernetesObjectFetcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
@@ -23,12 +24,14 @@ public class ProvidersService {
     private final ApiextensionsV1Api apiExtensions;
 
     private final ProviderMapper providerMapper;
+    private final KubernetesObjectFetcher kubernetesObjectFetcher ;
 
-    public ProvidersService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, ProviderMapper providerMapper) {
+    public ProvidersService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, ProviderMapper providerMapper, KubernetesObjectFetcher kubernetesObjectFetcher) {
         this.customObjectsApi = customObjectsApi;
         this.api = api;
         this.apiExtensions = apiExtensions;
         this.providerMapper = providerMapper;
+        this.kubernetesObjectFetcher = kubernetesObjectFetcher;
     }
 
     public ProviderDto listProviders() throws Exception {
@@ -36,9 +39,7 @@ public class ProvidersService {
         String version = "v1";
         String plural = "providers";
 
-        try {
-            Object rawResponse = customObjectsApi.listClusterCustomObject(
-                    group, version, plural, null, null, null, null, null, null, null, null, null, null);
+        Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
 
             // Convert the raw Object to your ProviderModel.ProviderList
             ObjectMapper mapper = new ObjectMapper();
@@ -46,11 +47,7 @@ public class ProvidersService {
 
 
             return providerMapper.ProviderListToProviderDto(providers);
-        } catch (ApiException e) {
-            System.err.println("Error fetching providers: " + e.getResponseBody());
-            e.printStackTrace();
-            throw new Exception("Failed to fetch providers from Kubernetes API", e);
-        }
+
     }
 
     public Object listProviderconfigsets() throws Exception {
