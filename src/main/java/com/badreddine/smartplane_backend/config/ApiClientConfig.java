@@ -1,7 +1,6 @@
 package com.badreddine.smartplane_backend.config;
 
 import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.apis.ApiextensionsApi;
 import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
@@ -35,4 +34,5 @@ public class ApiClientConfig {
     public ApiextensionsV1Api apiExtensions(ApiClient apiClient) {
         return new ApiextensionsV1Api(apiClient);
     }
+    
 }

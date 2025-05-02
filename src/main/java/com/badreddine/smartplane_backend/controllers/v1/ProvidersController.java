@@ -1,6 +1,8 @@
 package com.badreddine.smartplane_backend.controllers.v1;
 
+import com.badreddine.smartplane_backend.dto.ProviderConfigDto;
 import com.badreddine.smartplane_backend.dto.ProviderDto;
+import com.badreddine.smartplane_backend.models.ProviderConfigModel;
 import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.badreddine.smartplane_backend.services.ProvidersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +33,7 @@ public class ProvidersController {
     }
 
     @GetMapping("/providerconfigs")
-    public Object getProviderConfigs(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace, @RequestParam(value = "provider", required = false) String provider) {
+    public ProviderConfigDto getProviderConfigs(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace, @RequestParam(value = "provider", required = false) String provider) {
         try {
             return providersService.listProviderconfigsets();
         } catch (Exception e) {

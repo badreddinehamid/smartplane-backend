@@ -1,6 +1,7 @@
 package com.badreddine.smartplane_backend.services;
 import com.badreddine.smartplane_backend.dto.ProviderConfigDto;
 import com.badreddine.smartplane_backend.dto.ProviderDto;
+import com.badreddine.smartplane_backend.mappers.ProviderConfigMapper;
 import com.badreddine.smartplane_backend.mappers.ProviderMapper;
 import com.badreddine.smartplane_backend.models.ProviderConfigModel;
 import com.badreddine.smartplane_backend.models.ProviderModel;
@@ -43,7 +44,6 @@ public class ProvidersService {
 
         Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
 
-            // Convert the raw Object to your ProviderModel.ProviderList
             ObjectMapper mapper = new ObjectMapper();
             ProviderModel.ProviderList providers = mapper.convertValue(rawResponse, ProviderModel.ProviderList.class);
 
@@ -52,19 +52,26 @@ public class ProvidersService {
 
     }
 
-    public Object listProviderconfigsets() throws Exception {
+    public ProviderConfigDto listProviderconfigsets() throws Exception {
         String group = "aws.upbound.io";
         String version = "v1beta1";
         String plural = "providerconfigs";
 
-        Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
-        return rawResponse;
+        Map<String, Object> rawResponse = (Map<String, Object>) kubernetesObjectFetcher.ListKubernetesObjects(group, version, plural);
+        List<Map<String, Object>> items = (List<Map<String, Object>>) rawResponse.get("items");
+        ObjectMapper mapper = new ObjectMapper();
 
+        ProviderConfigModel.ProviderConfigList providersconfigs = mapper.convertValue(rawResponse, ProviderConfigModel.ProviderConfigList.class);
+
+
+        return ProviderConfigMapper.INSTANCE.providerConfigListTOproviderConfigDto(providersconfigs);
     }
 
 
-
     private Map<String, Object> getSecretInfo(String namespace, String secretName, String secretKey) throws Exception {
+
+
+
         try {
             V1Secret secret = api.readNamespacedSecret(secretName, namespace, null);
 
@@ -91,6 +98,7 @@ public class ProvidersService {
         String group = "pkg.crossplane.io";
         String version = "v1";
         String plural = "providers";
+
 
         try {
             Map<String, Object> response = (Map<String, Object>) customObjectsApi.listClusterCustomObject(

@@ -4,8 +4,10 @@ import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.springframework.stereotype.Component;
 
 @Data
+@Component
 public class ProviderDto {
     private String apiVersion;
 

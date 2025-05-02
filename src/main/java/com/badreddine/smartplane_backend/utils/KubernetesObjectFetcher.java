@@ -6,6 +6,8 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class KubernetesObjectFetcher {
 
