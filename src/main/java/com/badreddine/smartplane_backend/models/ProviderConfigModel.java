@@ -1,189 +1,112 @@
 package com.badreddine.smartplane_backend.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ProviderConfigModel {
-    private SecretInfo secretInfo;
-    private Metadata metadata;
+
+    @JsonProperty("apiVersion")
     private String apiVersion;
+
+    @JsonProperty("kind")
     private String kind;
+
+    @JsonProperty("metadata")
+    private Metadata metadata;
+
+    @JsonProperty("spec")
     private Spec spec;
+
+    @JsonProperty("status")
     private Status status;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SecretInfo {
-        private int sizeBytes;
-        private String name;
-        private String namespace;
-        private String type;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class Metadata {
-        private Annotations annotations;
-        private String creationTimestamp;
-        private List<String> finalizers;
-        private double generation;
-        private List<ManagedField> managedFields;
+        @JsonProperty("name")
         private String name;
-        private String resourceVersion;
-        private String uid;
 
-        @Data
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Annotations {
-            @JsonProperty("kubectl.kubernetes.io/last-applied-configuration")
-            private String lastAppliedConfiguration;
-        }
+        @JsonProperty("namespace")
+        private String namespace;
 
-        @Data
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class ManagedField {
-            private String apiVersion;
-            private String fieldsType;
-            private FieldsV1 fieldsV1;
-            private String manager;
-            private String operation;
-            private String time;
-            private String subresource;
+        @JsonProperty("labels")
+        private Map<String, String> labels;
 
-            @Data
-            @NoArgsConstructor
-            @AllArgsConstructor
-            public static class FieldsV1 {
-                @JsonProperty("f:metadata")
-                private FMetadata fMetadata;
-                @JsonProperty("f:spec")
-                private FSpec fSpec;
-                @JsonProperty("f:status")
-                private FStatus fStatus;
-
-                @Data
-                @NoArgsConstructor
-                @AllArgsConstructor
-                public static class FMetadata {
-                    @JsonProperty("f:annotations")
-                    private FAnnotations fAnnotations;
-                    @JsonProperty("f:finalizers")
-                    private FFinalizers fFinalizers;
-
-                    @Data
-                    @NoArgsConstructor
-                    @AllArgsConstructor
-                    public static class FAnnotations {
-                        @JsonProperty(".")
-                        private Empty empty;
-                        @JsonProperty("f:kubectl.kubernetes.io/last-applied-configuration")
-                        private Empty lastAppliedConfig;
-                    }
-
-                    @Data
-                    @NoArgsConstructor
-                    @AllArgsConstructor
-                    public static class FFinalizers {
-                        @JsonProperty(".")
-                        private Empty empty;
-                        @JsonProperty("v:\"in-use.crossplane.io\"")
-                        private Empty inUseCrossplane;
-                    }
-                }
-
-                @Data
-                @NoArgsConstructor
-                @AllArgsConstructor
-                public static class FSpec {
-                    @JsonProperty(".")
-                    private Empty empty;
-                    @JsonProperty("f:credentials")
-                    private FCredentials fCredentials;
-
-                    @Data
-                    @NoArgsConstructor
-                    @AllArgsConstructor
-                    public static class FCredentials {
-                        @JsonProperty(".")
-                        private Empty empty;
-                        @JsonProperty("f:secretRef")
-                        private FSecretRef fSecretRef;
-                        @JsonProperty("f:source")
-                        private Empty fSource;
-
-                        @Data
-                        @NoArgsConstructor
-                        @AllArgsConstructor
-                        public static class FSecretRef {
-                            @JsonProperty(".")
-                            private Empty empty;
-                            @JsonProperty("f:key")
-                            private Empty fKey;
-                            @JsonProperty("f:name")
-                            private Empty fName;
-                            @JsonProperty("f:namespace")
-                            private Empty fNamespace;
-                        }
-                    }
-                }
-
-                @Data
-                @NoArgsConstructor
-                @AllArgsConstructor
-                public static class FStatus {
-                    @JsonProperty(".")
-                    private Empty empty;
-                    @JsonProperty("f:users")
-                    private Empty fUsers;
-                }
-            }
-        }
+        @JsonProperty("annotations")
+        private Map<String, String> annotations;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Spec {
+        @JsonProperty("credentials")
         private Credentials credentials;
+    }
 
-        @Data
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Credentials {
-            private SecretRef secretRef;
-            private String source;
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Credentials {
+        @JsonProperty("source")
+        private String source;
 
-            @Data
-            @NoArgsConstructor
-            @AllArgsConstructor
-            public static class SecretRef {
-                private String key;
-                private String name;
-                private String namespace;
-            }
-        }
+        @JsonProperty("secretRef")
+        private SecretRef secretRef;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SecretRef {
+        @JsonProperty("namespace")
+        private String namespace;
+
+        @JsonProperty("name")
+        private String name;
+
+        @JsonProperty("key")
+        private String key;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Status {
-        private double users;
+        @JsonProperty("conditions")
+        private Condition[] conditions;
+
+        @JsonProperty("users")
+        private String[] users;
+
+        @JsonProperty("accountId")
+        private String accountId;
     }
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class Empty {}
+    public static class Condition {
+        @JsonProperty("lastTransitionTime")
+        private String lastTransitionTime;
+
+        @JsonProperty("reason")
+        private String reason;
+
+        @JsonProperty("status")
+        private String status;
+
+        @JsonProperty("type")
+        private String type;
+    }
 }
