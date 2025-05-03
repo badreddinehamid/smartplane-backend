@@ -14,26 +14,27 @@ import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.openapi.models.V1CustomResourceDefinition;
 import io.kubernetes.client.openapi.models.V1CustomResourceDefinitionList;
 import io.kubernetes.client.openapi.models.V1Secret;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+
 public class ProvidersService {
+    @Autowired
+    private ProviderMapper providerMapper;
 
     private final CustomObjectsApi customObjectsApi;
     private final CoreV1Api api;
     private final ApiextensionsV1Api apiExtensions;
-
-    private final ProviderMapper providerMapper;
     private final KubernetesObjectFetcher kubernetesObjectFetcher ;
 
-    public ProvidersService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, ProviderMapper providerMapper, KubernetesObjectFetcher kubernetesObjectFetcher) {
+    public ProvidersService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, KubernetesObjectFetcher kubernetesObjectFetcher) {
         this.customObjectsApi = customObjectsApi;
         this.api = api;
         this.apiExtensions = apiExtensions;
-        this.providerMapper = providerMapper;
         this.kubernetesObjectFetcher = kubernetesObjectFetcher;
     }
 
@@ -46,7 +47,7 @@ public class ProvidersService {
 
             ObjectMapper mapper = new ObjectMapper();
             ProviderModel.ProviderList providers = mapper.convertValue(rawResponse, ProviderModel.ProviderList.class);
-
+        System.out.println(providers.getApiVersion());
 
             return providerMapper.ProviderListToProviderDto(providers);
 

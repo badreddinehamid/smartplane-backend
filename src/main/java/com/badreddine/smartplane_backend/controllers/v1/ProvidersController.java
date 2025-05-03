@@ -41,14 +41,9 @@ public class ProvidersController {
             return null;
         }
     }
-    @GetMapping("/test-lombok")
-    public String testLombok() {
-        @Getter
-        class Test {
-            private String value = "test";
-        }
-        return new Test().getValue();
-    }
+
+
+
 
     @GetMapping("/status")
     public Object getProviderStatus(@RequestParam(value = "name") String providerName) {
