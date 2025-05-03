@@ -108,7 +108,7 @@ public class ProviderModel {
         private Boolean skipDependencyResolution;
     }
 
-    // RuntimeConfigRef inner class
+    //  inner class
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static class RuntimeConfigRef {
@@ -153,9 +153,9 @@ public class ProviderModel {
         private String type;
     }
 
-    // ProviderList inner class (for the collection response)
     @Data
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Component
     public static class ProviderList {
         @JsonProperty("apiVersion")
         private String apiVersion;

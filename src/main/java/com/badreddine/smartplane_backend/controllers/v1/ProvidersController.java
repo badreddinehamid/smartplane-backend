@@ -5,6 +5,7 @@ import com.badreddine.smartplane_backend.dto.ProviderDto;
 import com.badreddine.smartplane_backend.models.ProviderConfigModel;
 import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.badreddine.smartplane_backend.services.ProvidersService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,14 @@ public class ProvidersController {
             e.printStackTrace();
             return null;
         }
+    }
+    @GetMapping("/test-lombok")
+    public String testLombok() {
+        @Data
+        class Test {
+            private String value = "test";
+        }
+        return new Test().getValue(); // Should return "test"
     }
 
     @GetMapping("/status")

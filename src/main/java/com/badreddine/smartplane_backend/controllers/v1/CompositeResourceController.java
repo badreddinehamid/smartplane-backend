@@ -20,6 +20,7 @@ public class CompositeResourceController {
 
         } catch (Exception e) {
             e.printStackTrace();
+            
         }
 
         return null;
