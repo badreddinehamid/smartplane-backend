@@ -2,17 +2,16 @@ package com.badreddine.smartplane_backend.controllers.v1;
 
 import com.badreddine.smartplane_backend.dto.ProviderConfigDto;
 import com.badreddine.smartplane_backend.dto.ProviderDto;
-import com.badreddine.smartplane_backend.models.ProviderConfigModel;
 import com.badreddine.smartplane_backend.models.ProviderModel;
 import com.badreddine.smartplane_backend.services.ProvidersService;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -44,11 +43,11 @@ public class ProvidersController {
     }
     @GetMapping("/test-lombok")
     public String testLombok() {
-        @Data
+        @Getter
         class Test {
             private String value = "test";
         }
-        return new Test().getValue(); // Should return "test"
+        return new Test().getValue();
     }
 
     @GetMapping("/status")
