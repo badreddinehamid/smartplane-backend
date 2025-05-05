@@ -1,20 +1,23 @@
 package com.badreddine.smartplane_backend.dto;
 
-import com.badreddine.smartplane_backend.models.ProviderModel;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@Data
-public class ProviderDto {
-    private String apiVersion;
+import java.util.Date;
+import java.util.List;
 
-    private String kind;
+@Data
+@AllArgsConstructor
+public class ProviderDto {
+    private String name;
+    private String url;
+
 public ProviderDto(){}
 
-    public ProviderDto(String apiVersion, String kind) {
-        this.apiVersion = apiVersion;
-        this.kind = kind;}
+
 }

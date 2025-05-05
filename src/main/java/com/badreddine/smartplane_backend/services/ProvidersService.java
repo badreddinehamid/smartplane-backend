@@ -4,7 +4,7 @@ import com.badreddine.smartplane_backend.dto.ProviderDto;
 import com.badreddine.smartplane_backend.mappers.ProviderConfigMapper;
 import com.badreddine.smartplane_backend.mappers.ProviderMapper;
 import com.badreddine.smartplane_backend.models.ProviderConfigModel;
-import com.badreddine.smartplane_backend.models.ProviderModel;
+import com.badreddine.smartplane_backend.models.provider.ProviderListModel;
 import com.badreddine.smartplane_backend.utils.KubernetesObjectFetcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.ApiException;
@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 @Service
 
 public class ProvidersService {
-    @Autowired
-    private ProviderMapper providerMapper;
 
     private final CustomObjectsApi customObjectsApi;
     private final CoreV1Api api;
@@ -38,7 +36,7 @@ public class ProvidersService {
         this.kubernetesObjectFetcher = kubernetesObjectFetcher;
     }
 
-    public ProviderDto listProviders() throws Exception {
+    public List<ProviderDto> listProviders() throws Exception {
         String group = "pkg.crossplane.io";
         String version = "v1";
         String plural = "providers";
@@ -46,10 +44,8 @@ public class ProvidersService {
         Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
 
             ObjectMapper mapper = new ObjectMapper();
-            ProviderModel.ProviderList providers = mapper.convertValue(rawResponse, ProviderModel.ProviderList.class);
-        System.out.println(providers.getApiVersion());
-
-            return providerMapper.ProviderListToProviderDto(providers);
+            ProviderListModel providers = mapper.convertValue(rawResponse, ProviderListModel.class);
+            return ProviderMapper.INSTANCE.providerListToProviderDtoList(providers.getItems());
 
     }
 
@@ -66,7 +62,7 @@ public class ProvidersService {
 
 
 
-        return ProviderConfigMapper.INSTANCE.providerConfigListTOproviderConfigDto(providersconfigs);
+        return ProviderConfigMapper.INSTANCE.toDTO(providersconfigs);
     }
 
 
