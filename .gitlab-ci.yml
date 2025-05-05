@@ -16,10 +16,9 @@ cache:
 
 secrets-scan:
   stage: secrets
-  image: zricethezav/gitleaks:latest
+  image: zricethezav/gitleaks:v8.18.4
   script:
-    - detect --source=. --no-git -v --redact
-  entrypoint: ["gitleaks"]
+    - gitleaks detect --no-git -v --redact
   allow_failure: false
 
 build:
