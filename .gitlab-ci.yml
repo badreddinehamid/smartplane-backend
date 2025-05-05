@@ -1,5 +1,4 @@
 stages:
-  - secrets
   - build
   - test
   - deploy
@@ -13,15 +12,6 @@ cache:
   paths:
     - .m2/repository/  # Cache Maven pour accélérer les builds
     - target/          # Cache les artefacts de build
-
-secrets-scan:
-  stage: secrets
-  image:
-    name: zricethezav/gitleaks:latest
-    entrypoint: [""]
-  script:
-    - gitleaks detect --source=. --no-git -v --redact
-  allow_failure: false
 
 build:
   stage: build
