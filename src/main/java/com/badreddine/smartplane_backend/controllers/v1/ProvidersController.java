@@ -33,7 +33,7 @@ public class ProvidersController {
     }
 
     @GetMapping("/providerconfigs")
-    public ProviderConfigDto getProviderConfigs(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace, @RequestParam(value = "provider", required = false) String provider) {
+    public Map<String, Object> getProviderConfigs(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace, @RequestParam(value = "provider", required = false) String provider) {
         try {
             return providersService.listProviderconfigsets();
         } catch (Exception e) {
@@ -45,35 +45,8 @@ public class ProvidersController {
 
 
 
-    @GetMapping("/status")
-    public Object getProviderStatus(@RequestParam(value = "name") String providerName) {
-        try {
-            return providersService.getProviderStatus(providerName);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Map.of("error", "Failed to fetch provider status");
-        }
-    }
 
-    @GetMapping("/events")
-    public Object getProviderEvents(
-            @RequestParam String providerName,
-            @RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace) {
-        try {
-            return providersService.getProviderEvents(providerName, namespace);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Map.of("error", e.getMessage());
-        }
-    }
 
-    @GetMapping("/api-resources")
-    public Object getProviderApiResources(@RequestParam String providerGroup) {
-        try {
-            return providersService.listProviderApiResources(providerGroup);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Map.of("error", e.getMessage());
-        }
-    }
+
+
 }

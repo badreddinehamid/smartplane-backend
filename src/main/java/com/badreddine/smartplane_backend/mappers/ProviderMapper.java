@@ -12,6 +12,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ProviderMapper {
         ProviderMapper INSTANCE = Mappers.getMapper(ProviderMapper.class);
+
+
     @Mapping(source = "metadata.name", target = "name")
     @Mapping(source = "spec.pkg", target = "url")
     ProviderDto providerToProviderDto(ProviderModel provider);
