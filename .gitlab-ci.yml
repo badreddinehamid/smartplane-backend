@@ -1,5 +1,5 @@
 stages:
-  - secret
+  - secrets
   - build
   - test
   - deploy
@@ -15,7 +15,7 @@ cache:
     - target/          # Cache les artefacts de build
 
 secrets-scan:
-  stage: secret
+  stage: secrets
   image: zricethezav/gitleaks:latest
   script:
     - gitleaks detect --no-git -v --redact
