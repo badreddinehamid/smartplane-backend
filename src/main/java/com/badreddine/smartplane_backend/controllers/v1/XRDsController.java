@@ -8,20 +8,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/xrds")
 public class XRDsController {
 
-
-    private final XRDsService xrdsService;
-
     @Autowired
-    public XRDsController(XRDsService xrdsService) {
-        this.xrdsService = xrdsService;
-    }
+    private XRDsService xrdsService;
 
 
     @GetMapping("/")
@@ -33,7 +27,7 @@ public class XRDsController {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Collections.emptyList();
+        return null;
     }
 
 }
