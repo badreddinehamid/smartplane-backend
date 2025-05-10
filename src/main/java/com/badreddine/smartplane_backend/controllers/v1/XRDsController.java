@@ -13,14 +13,14 @@ public class XRDsController {
 
 
     @Autowired
-    private XRDsService xrDsService;
+    private XRDsService xrdsService;
 
 
     @GetMapping("/")
     public Object getxrds(@RequestParam(value = "namespace", defaultValue = "crossplane-system") String namespace){
 
         try {
-            return xrDsService.listXrds();
+            return xrdsService.listXrds();
 
         } catch (Exception e) {
             e.printStackTrace();

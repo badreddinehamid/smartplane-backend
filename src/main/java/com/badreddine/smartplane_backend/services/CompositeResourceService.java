@@ -50,7 +50,7 @@ public class CompositeResourceService {
                 String plural = (String) names.get("plural");
 
                 List<Map<String, Object>> versions = (List<Map<String, Object>>) spec.get("versions");
-                String version = (String) versions.get(0).get("name"); // pick first version
+                String version = (String) versions.getFirst().get("name"); // pick first version
 
                 System.out.printf("Fetching composite: %s.%s (%s)%n", plural, group, version);
 

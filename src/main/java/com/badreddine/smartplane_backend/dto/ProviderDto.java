@@ -1,16 +1,8 @@
 package com.badreddine.smartplane_backend.dto;
 
-import com.badreddine.smartplane_backend.models.provider.ProviderStatus;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +10,10 @@ public class ProviderDto {
     private String name;
     private String url;
 
-public ProviderDto(){}
+public ProviderDto(){
+// Default constructor required for  Jackson to deserialize JSON into this object
+
+}
 
 
 }
