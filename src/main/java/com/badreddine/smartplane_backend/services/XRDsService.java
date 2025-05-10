@@ -1,5 +1,6 @@
 package com.badreddine.smartplane_backend.services;
 
+import com.badreddine.smartplane_backend.dto.XrdsDto;
 import com.badreddine.smartplane_backend.mappers.ProviderMapper;
 import com.badreddine.smartplane_backend.mappers.XrdsMapper;
 import com.badreddine.smartplane_backend.models.XrdsModel;
@@ -32,7 +33,7 @@ public class XRDsService {
 
         this.kubernetesObjectFetcher = kubernetesObjectFetcher;
     }
-        public Object listXrds() throws Exception {
+        public List<XrdsDto> listXrds() throws Exception {
             String group = "apiextensions.crossplane.io";
             String version = "v1";
             String plural = "compositeresourcedefinitions";

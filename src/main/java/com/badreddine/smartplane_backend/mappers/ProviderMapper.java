@@ -15,6 +15,8 @@ public interface ProviderMapper {
 
 
     @Mapping(source = "metadata.name", target = "name")
+    @Mapping(source = "spec.pkg", target = "url")
+
     ProviderDto providerToProviderDto(ProviderModel provider);
 
     List<ProviderDto> providerListToProviderDtoList(List<ProviderModel> providers);
