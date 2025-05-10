@@ -1,0 +1,51 @@
+stages:
+  - secrets
+  - build
+  - test
+  - deploy
+
+variables:
+  # Utilisez ces variables dans les paramètres CI/CD de GitLab
+  IMAGE_NAME: registry.gitlab.com/ienvyyou314/smartplane_back/backend
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  
+cache:
+  paths:
+    - .m2/repository/  # Cache Maven pour accélérer les builds
+    - target/          # Cache les artefacts de build
+
+secrets-scan:
+  stage: secrets
+  image:
+    name: zricethezav/gitleaks:latest
+    entrypoint: [""]
+  script:
+    - gitleaks detect --source=. --no-git -v --redact
+  allow_failure: false
+
+build:
+  stage: build
+  image: maven:3.9-eclipse-temurin-21  # Image avec Java 21
+  script:
+    - mvn clean package -DskipTests
+  artifacts:
+    paths:
+      - target/*.jar  # Conserve le jar pour les étapes suivantes
+
+test:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  script:
+    - mvn test
+
+deploy:
+  stage: deploy
+  image: maven:3.9-eclipse-temurin-21
+  services:
+    - docker:24.0-dind  # Nécessaire pour Jib
+  variables:
+    DOCKER_HOST: tcp://docker:2375  # Configuration Docker-in-Docker
+  script:
+    - mvn compile jib:build -Djib.to.auth.username=$CI_REGISTRY_USER -Djib.to.auth.password=$CI_REGISTRY_PASSWORD
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "mavenProject"'  # Exécution conditionnelle
