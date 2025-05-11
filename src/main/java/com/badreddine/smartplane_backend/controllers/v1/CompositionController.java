@@ -9,19 +9,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/compositions")
 public class CompositionController  {
 
-    private final CompositionsService compositionsService;
-
     @Autowired
-    public CompositionController(CompositionsService compositionsService) {
-        this.compositionsService = compositionsService;
-    }
+    private CompositionsService compositionsService;
 
 
     @GetMapping("/")
@@ -35,6 +30,6 @@ public class CompositionController  {
         }
 
 
-        return Collections.emptyList();
+        return null;
     }
 }
