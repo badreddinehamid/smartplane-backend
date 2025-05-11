@@ -1,6 +1,11 @@
 package com.badreddine.smartplane_backend.services;
 
-import io.kubernetes.client.openapi.ApiException;
+import com.badreddine.smartplane_backend.dto.ClaimDto;
+import com.badreddine.smartplane_backend.mappers.ClaimMapper;
+import com.badreddine.smartplane_backend.models.ClaimsModel;
+import com.badreddine.smartplane_backend.models.XrdsModel;
+import com.badreddine.smartplane_backend.utils.KubernetesObjectFetcher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
@@ -8,71 +13,50 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ClaimService {
     private final CustomObjectsApi customObjectsApi;
     private final CoreV1Api api;
     private final ApiextensionsV1Api apiExtensions;
+    private final KubernetesObjectFetcher kubernetesObjectFetcher;
+    ObjectMapper objectMapper = new ObjectMapper();
 
-    public ClaimService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions) {
+    public ClaimService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, KubernetesObjectFetcher kubernetesObjectFetcher) {
         this.customObjectsApi = customObjectsApi;
         this.api = api;
         this.apiExtensions = apiExtensions;
+        this.kubernetesObjectFetcher = kubernetesObjectFetcher;
+
     }
-    public Object listclaims() throws Exception {
-        String group = "apiextensions.crossplane.io";
-        String version = "v1";
-        String plural = "compositeresourcedefinitions";
+    public List<ClaimDto> listclaims() throws Exception {
+        String xrdGroup = "apiextensions.crossplane.io";
+        String xrdVersion = "v1";
+        String xrdPlural = "compositeresourcedefinitions";
 
-        try {
-            Object compositeResourceDef =  customObjectsApi.listClusterCustomObject(
-                    group, version, plural, null, null, null, null, null, null, null, null, null, null);
-            Map<String, Object> responseMap = (Map<String, Object>) compositeResourceDef;
-            List<Map<String, Object>> items = (List<Map<String, Object>>) responseMap.get("items");
+        List<ClaimsModel> claimsList = new ArrayList<>();
 
-            List<Map<String, Object>> allClaims = new ArrayList<>();
+        Object xrdsRawResponse =  kubernetesObjectFetcher.ListKubernetesObjects(xrdGroup,xrdVersion,xrdPlural);
 
-            // Loop through each XRD to find claim-backed types
-            for (Map<String, Object> xrd : items) {
-                Map<String, Object> spec = (Map<String, Object>) xrd.get("spec");
+        XrdsModel.XrdsList xrds = objectMapper.convertValue(xrdsRawResponse, XrdsModel.XrdsList.class);
+        List<XrdsModel> xrdsItems = xrds.getItems();
 
-                if (spec.containsKey("claimNames")) {
-                    Map<String, Object> claimNames = (Map<String, Object>) spec.get("claimNames");
-                    String cgroup = (String) spec.get("group");
-                    String cplural = (String) claimNames.get("plural");
+        for(XrdsModel xrd :xrdsItems){
+            if (xrd.getSpec().getClaimNames() != null){
+                String group = xrd.getSpec().getGroup();
+                String plural = xrd.getSpec().getClaimNames().getPlural();
+                String version = xrd.getSpec().getVersions().getFirst().getName();
 
-                    List<Map<String, Object>> versions = (List<Map<String, Object>>) spec.get("versions");
-                    String cversion = (String) versions.get(0).get("name"); // first version assumed active
 
-                    System.out.printf("Listing claim: %s.%s (%s)%n", cplural, cgroup, cversion);
+                Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
 
-                    try {
-                        //  List all claim instances of this type
-                        Object claims = customObjectsApi.listClusterCustomObject(
-                                cgroup, cversion, cplural,
-                                null, null, null, null,
-                                null, null, null, null, null,null
-                        );
+                ClaimsModel.ClaimsListModel claim =objectMapper.convertValue(rawResponse, ClaimsModel.ClaimsListModel.class);
+                claimsList.addAll(claim.getItems());
 
-                        Map<String, Object> claimsMap = (Map<String, Object>) claims;
-                        List<Map<String, Object>> claimItems = (List<Map<String, Object>>) claimsMap.get("items");
-
-                        allClaims.addAll(claimItems);
-                    } catch (ApiException ce) {
-                        System.err.printf("Failed to list claims for %s.%s: %s%n", cplural, cgroup, ce.getMessage());
-                    }
-                }
             }
-
-            return allClaims;
-        } catch (ApiException e) {
-            System.err.println("Error fetching claim: " + e.getResponseBody());
-            e.printStackTrace();
-            throw new Exception("Failed to fetch claim from Kubernetes API", e);
         }
 
+        return ClaimMapper.INSTANCE.claimListToClaimDto(claimsList);
     }
 
 }

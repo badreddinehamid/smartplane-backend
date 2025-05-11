@@ -1,6 +1,11 @@
 package com.badreddine.smartplane_backend.services;
 
-import io.kubernetes.client.openapi.ApiException;
+import com.badreddine.smartplane_backend.dto.CompositeResourcesDto;
+import com.badreddine.smartplane_backend.mappers.CompositeResourcesMapper;
+import com.badreddine.smartplane_backend.models.CompositeResourcesModel;
+import com.badreddine.smartplane_backend.models.XrdsModel;
+import com.badreddine.smartplane_backend.utils.KubernetesObjectFetcher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
@@ -8,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class CompositeResourceService {
@@ -16,65 +20,54 @@ public class CompositeResourceService {
     private final CustomObjectsApi customObjectsApi;
     private final CoreV1Api api;
     private final ApiextensionsV1Api apiExtensions;
+    private final KubernetesObjectFetcher kubernetesObjectFetcher ;
 
 
-    public CompositeResourceService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions) {
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+
+
+    public CompositeResourceService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, KubernetesObjectFetcher kubernetesObjectFetcher) {
         this.customObjectsApi = customObjectsApi;
         this.api = api;
         this.apiExtensions = apiExtensions;
+        this.kubernetesObjectFetcher = kubernetesObjectFetcher;
     }
 
-    public Object listCompositeResources() throws Exception {
+    public List<CompositeResourcesDto> listCompositeResources() throws Exception {
+
         String xrdGroup = "apiextensions.crossplane.io";
         String xrdVersion = "v1";
         String xrdPlural = "compositeresourcedefinitions";
 
-        try {
-            Object xrdResponse = customObjectsApi.listClusterCustomObject(
-                    xrdGroup, xrdVersion, xrdPlural,
-                    null, null, null, null,
-                    null, null, null, null, null,null
-            );
+        List<CompositeResourcesModel> compositeResourcesList = new ArrayList<>();
 
-            Map<String, Object> responseMap = (Map<String, Object>) xrdResponse;
-            List<Map<String, Object>> xrdItems = (List<Map<String, Object>>) responseMap.get("items");
+        Object xrdsRawResponse =  kubernetesObjectFetcher.ListKubernetesObjects(xrdGroup,xrdVersion,xrdPlural);
 
-            List<Map<String, Object>> allXRs = new ArrayList<>();
+        XrdsModel.XrdsList xrds = objectMapper.convertValue(xrdsRawResponse, XrdsModel.XrdsList.class);
+        List<XrdsModel> xrdsItems = xrds.getItems();
 
-            for (Map<String, Object> xrd : xrdItems) {
-                Map<String, Object> spec = (Map<String, Object>) xrd.get("spec");
+        for(XrdsModel xrd :xrdsItems){
+            String group = xrd.getSpec().getGroup();
+            String plural = xrd.getSpec().getNames().getPlural();
+            String version = xrd.getSpec().getVersions().getFirst().getName();
 
-                // Extract composite resource info (not the claimNames)
-                Map<String, Object> names = (Map<String, Object>) spec.get("names");
-                String group = (String) spec.get("group");
-                String plural = (String) names.get("plural");
 
-                List<Map<String, Object>> versions = (List<Map<String, Object>>) spec.get("versions");
-                String version = (String) versions.getFirst().get("name"); // pick first version
+            Object rawResponse = kubernetesObjectFetcher.ListKubernetesObjects(group,version,plural);
 
-                System.out.printf("Fetching composite: %s.%s (%s)%n", plural, group, version);
+            CompositeResourcesModel.CompositeResourceListModel xrs =objectMapper.convertValue(rawResponse, CompositeResourcesModel.CompositeResourceListModel.class);
+            compositeResourcesList.addAll(xrs.getItems());
 
-                try {
-                    Object xrList = customObjectsApi.listClusterCustomObject(
-                            group, version, plural,
-                            null, null, null, null,
-                            null, null, null, null, null,null
-                    );
 
-                    Map<String, Object> xrMap = (Map<String, Object>) xrList;
-                    List<Map<String, Object>> items = (List<Map<String, Object>>) xrMap.get("items");
 
-                    allXRs.addAll(items);
-                } catch (ApiException ce) {
-                    System.err.printf("Failed to list composites for %s.%s: %s%n", plural, group, ce.getMessage());
-                }
-            }
 
-            return allXRs;
 
-        } catch (ApiException e) {
-            System.err.println("Error fetching XRDs: " + e.getResponseBody());
-            throw new Exception("Failed to fetch CompositeResourceDefinitions", e);
+
+
         }
+
+        return CompositeResourcesMapper.INSTANCE.xrListToxrDto(compositeResourcesList);
+
+
     }
 }

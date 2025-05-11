@@ -4,14 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProviderDto {
+public class ClaimDto {
     private String name;
-    private String url;
-
-
+    private String kind;
+    private String apiVersion;
+    private String namespace;
 
 }
