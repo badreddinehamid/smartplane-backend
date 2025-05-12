@@ -1,25 +1,19 @@
 package com.badreddine.smartplane_backend.utils;
 
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 
 @Component
 public class KubernetesObjectFetcher {
 
     private final CustomObjectsApi customObjectsApi;
-    private final CoreV1Api api;
-    private final ApiextensionsV1Api apiExtensions;
 
 
-    public KubernetesObjectFetcher(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions) {
+    public KubernetesObjectFetcher(CustomObjectsApi customObjectsApi) {
         this.customObjectsApi = customObjectsApi;
-        this.api = api;
-        this.apiExtensions = apiExtensions;
+
     }
 
     public Object ListKubernetesObjects(String group, String version, String plural) throws Exception {

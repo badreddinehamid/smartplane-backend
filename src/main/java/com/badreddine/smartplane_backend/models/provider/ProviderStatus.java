@@ -20,7 +20,7 @@ public class ProviderStatus {
     private List<Condition> conditions;
 
     // Getters and Setters
-
+    @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Installed {
 
@@ -38,6 +38,7 @@ public class ProviderStatus {
 
     }
 
+    @Data
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Condition {
 
