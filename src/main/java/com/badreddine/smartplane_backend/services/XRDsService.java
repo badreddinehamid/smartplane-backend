@@ -1,35 +1,24 @@
 package com.badreddine.smartplane_backend.services;
 
 import com.badreddine.smartplane_backend.dto.XrdsDto;
-import com.badreddine.smartplane_backend.mappers.ProviderMapper;
 import com.badreddine.smartplane_backend.mappers.XrdsMapper;
 import com.badreddine.smartplane_backend.models.XrdsModel;
-import com.badreddine.smartplane_backend.models.provider.ProviderListModel;
 import com.badreddine.smartplane_backend.utils.KubernetesObjectFetcher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.ApiextensionsV1Api;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class XRDsService {
 
 
-    private final CustomObjectsApi customObjectsApi;
-    private final CoreV1Api api;
-    private final ApiextensionsV1Api apiExtensions;
     private final KubernetesObjectFetcher kubernetesObjectFetcher ;
 
 
-    public XRDsService(CustomObjectsApi customObjectsApi, CoreV1Api api, ApiextensionsV1Api apiExtensions, KubernetesObjectFetcher kubernetesObjectFetcher) {
-        this.customObjectsApi = customObjectsApi;
-        this.api = api;
-        this.apiExtensions = apiExtensions;
+    public XRDsService(KubernetesObjectFetcher kubernetesObjectFetcher) {
+
 
         this.kubernetesObjectFetcher = kubernetesObjectFetcher;
     }
